@@ -52,9 +52,9 @@ def main():
 
         shortened_author_string = ', '.join(shortened_author_list)
 
-        journal = e['journal']
+        journal = e['journal'].replace('\\','').replace('}','')
         doi = e['doi']
-        title = e['title']
+        title = e['title'].replace('}','').replace('{','').replace('\n','').replace('\r','')
         if journal == 'Zenodo' or 'ZENODO' in doi:
             logging.info(f'Skipping cited dataset {title}, {doi} at Zenodo (for now?)')
             continue
@@ -90,7 +90,7 @@ def main():
         crossref_url = f'http://api.crossref.org/works/{doi}'
 
         r = requests.get(crossref_url)
-        reference_count = r.json()['message']['reference-count']
+        reference_count = r.json()['message']['is-referenced-by-count']
         
         # 'https://api.altmetric.com/v1/doi/10.1038/news.2011.490'
         altmetric_url = f'https://api.altmetric.com/v1/doi/{doi}'
