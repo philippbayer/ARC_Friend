@@ -24,6 +24,7 @@ Then, move the exported works.bib into the current directory and run this:
 That will print the final table to standard out.
 
 Alternatively, you can specify the path:
+
     python parseBibAndMakeTable.py --file /home/potato/Downloads/otherworks.bib
 
 assumes that you renamed your ORCID export to otherworks.bib.
@@ -31,8 +32,9 @@ assumes that you renamed your ORCID export to otherworks.bib.
 
 Example output:
 
+```
 1. Mousavi-Derazmahalleh, M., Bayer, P.E., Hane, J.K., Babu, V., Nguyen, H.T., Nelson, M.N., Erskine, W., Varshney, R.K., Papa, R., Edwards, D., 2019. Adapting legume crops to climate change using genomic approaches. Plant, Cell and Environment., 42, 6--19.
 Impact Factor = FILLME
 Citations = 175
 Altmetric score = 9.556
-
+```
