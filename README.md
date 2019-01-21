@@ -31,13 +31,24 @@ Alternatively, you can specify the path:
 assumes that you renamed your ORCID export to otherworks.bib.
 
 
-Example output:
+Example *buggy* output:
 
 ```
 1. Mousavi-Derazmahalleh, M., Bayer, P.E., Hane, J.K., Babu, V., Nguyen, H.T., Nelson, M.N., Erskine, W., Varshney, R.K., Papa, R., Edwards, D., 2019. Adapting legume crops to climate change using genomic approaches. Plant, Cell and Environment., 42, 6--19.
 Impact Factor = FILLME
 Citations = 3
 Altmetric score = 9.556
+
+2. C, ., Taylor, y.M., Kamphuis, L.G., Zhang, W., Garg, G., Berger, J.D., Mousavi-Derazmahalleh, M., Bayer, P.E., Edwards, D., Singh, K.B., Cowling, W.A., Nelson, M.N., 2018. INDEL variation in the regulatory region of the major flowering time gene LanFTc1is associated with vernalization response and flowering time in narrow-leafed lupin (Lupinus angustifolius L.). Plant, Cell & Environment.
+Impact Factor = FILLME
+Citations = 4
+Altmetric score = 0.25
+
+3. Mousavi-Derazmahalleh, M., Nevado, B., Bayer, P.E., Filatov, D.A., Hane, J.K., Edwards, D., Erskine, W., Nelson, M.N., 2018. The western Mediterranean region provided the founder population of domesticated narrow-leafed lupin. TAG. Theoretical and applied genetics. Theoretische und angewandte Genetik, 131, 2543--2554.
+Impact Factor = FILLME
+Citations = 0
+Altmetric score = 2.35
+
 ```
 
 

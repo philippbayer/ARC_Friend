@@ -52,7 +52,7 @@ def main():
 
         shortened_author_string = ', '.join(shortened_author_list)
 
-        journal = e['journal'].replace('\\','').replace('}','')
+        journal = e['journal'].replace('\\','').replace('}','').replace('{','')
         doi = e['doi']
         title = e['title'].replace('}','').replace('{','').replace('\n','').replace('\r','')
         if journal == 'Zenodo' or 'ZENODO' in doi:
@@ -97,7 +97,7 @@ def main():
         r = requests.get(altmetric_url)
         altmetric_score = r.json()['score']
 
-        overall_string += f'\nImpact Factor = FILLME\nCitations = {reference_count}\nAltmetric score = {altmetric_score}'
+        overall_string += f'\nImpact Factor = FILLME\nCitations = {reference_count}\nAltmetric score = {altmetric_score}\n'
         print(overall_string)
 
 if __name__ == '__main__':
