@@ -46,7 +46,9 @@ def main():
             a = a.strip()
             newa = ''
             if not a: continue
+            # I have now encountered three ways names are encoded
             if ',' in a:
+                # Bayer, Philipp E
                 # last name is first:
                 # last name
                 newa += a.split()[0] + ' '
@@ -56,9 +58,11 @@ def main():
                 # Bayer PE
                 newa += a.replace(' ',', ')
             else:
+                # Philipp Bayer
                 # last name is last
                 newa += a.split()[-1] + ', '
                 newa += '.'.join([substring[0] for substring in a.split()[:-1]])
+
             # add missing dot at end of first name
             if newa[-1] != '.':
                 newa += '.'
@@ -66,6 +70,7 @@ def main():
 
         shortened_author_string = ', '.join(shortened_author_list)
 
+        # is this a book chapter, or a paper?
         if 'booktitle' in e:
             journal = e['booktitle']
         else:
