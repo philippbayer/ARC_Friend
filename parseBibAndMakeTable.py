@@ -66,10 +66,13 @@ def main():
 
         shortened_author_string = ', '.join(shortened_author_list)
 
-        try:
-            journal = e['journal'].replace('\\','').replace('}','').replace('{','')
-        except KeyError:
-            journal = False
+        if 'booktitle' in e:
+            journal = e['booktitle']
+        else:
+            try:
+                journal = e['journal'].replace('\\','').replace('}','').replace('{','')
+            except KeyError:
+                journal = False
 
         try:
             doi = e['doi']
