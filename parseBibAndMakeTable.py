@@ -3,7 +3,8 @@ import requests
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 import argparse
-
+import json
+import datetime
 def main():
 
     parser = argparse.ArgumentParser(description='Parses an ORCID bibtex export, and prints a nice flat text file with Altmetric and citations added.')
@@ -29,8 +30,13 @@ def main():
         AltMetric score = 0
     '''
 
+    now = datetime.datetime.now()
+    now = now.strftime('%dth %B, %Y')
 
-    for counter, e in enumerate(bib_database.entries, start=1):
+    print(f'Citations and Altmetric scores obtained on {now}.')
+    print('Citations obtained from CrossRef.') # important to mention this as Google Scholar has higher citations
+    counter = 1
+    for e in bib_database.entries:
         e = bibtexparser.customization.homogenize_latex_encoding(e)
         # get rid of names like "Marie Kubal\\'akov\\'a"
         e = bibtexparser.customization.convert_to_unicode(e)
@@ -126,11 +132,21 @@ def main():
         # 'https://api.altmetric.com/v1/doi/10.1038/news.2011.490'
         altmetric_url = f'https://api.altmetric.com/v1/doi/{doi}'
         r = requests.get(altmetric_url)
-        altmetric_score = r.json()['score']
+        try:
+            altmetric_score = r.json()['score']
+        except json.decoder.JSONDecodeError:
+            # try again
+            r = requests.get(altmetric_url)
+            try:
+                altmetric_score = r.json()['score']
+            except json.decoder.JSONDecodeError:
+                logging.info(f'Cannot get Altmetric score for {doi}. {title}')
+                continue
 
         overall_string += f'\nImpact Factor = FILLME\nCitations = {reference_count}\nAltmetric score = {altmetric_score}\n'
         overall_string = overall_string.replace('..','')
         print(overall_string)
+        counter += 1
 
 if __name__ == '__main__':
     main()
