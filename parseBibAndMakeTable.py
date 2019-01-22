@@ -1,6 +1,7 @@
 import logging
 import requests
 import bibtexparser
+from bibtexparser.bparser import BibTexParser
 import argparse
 
 def main():
@@ -13,8 +14,12 @@ def main():
 
     logging.basicConfig(filename=args.logname, level=logging.INFO, filemode='w')
 
+    parser = BibTexParser(common_strings=False) #The common_strings option needs to be set when the parser object is created and has no effect if changed afterwards.
+    parser.ignore_nonstandard_types = False
+    parser.homogenise_fields = True
+
     with open(args.file) as bibtex_file:
-        bib_database = bibtexparser.load(bibtex_file)
+        bib_database = bibtexparser.load(bibtex_file, parser)
 
     '''
     I want the final output to look like this:
@@ -24,9 +29,13 @@ def main():
         AltMetric score = 0
     '''
 
+
     for counter, e in enumerate(bib_database.entries, start=1):
+        e = bibtexparser.customization.homogenize_latex_encoding(e)
+        # get rid of names like "Marie Kubal\\'akov\\'a"
+        e = bibtexparser.customization.convert_to_unicode(e)
         author_string = e['author']
-        author_list = author_string.replace('{','').replace('}','').split('and')
+        author_list = author_string.replace('{','').replace('}','').split(' and ')
         # shorten the first names
         # Farquard Banana becomes F.B.
         shortened_author_list = []
@@ -39,8 +48,13 @@ def main():
             if not a: continue
             if ',' in a:
                 # last name is first:
+                # last name
                 newa += a.split()[0] + ' '
+                # first name
                 newa += '.'.join([substring[0] for substring in a.split()[1:]])
+            elif a.split()[-1].isupper():
+                # Bayer PE
+                newa += a.replace(' ',', ')
             else:
                 # last name is last
                 newa += a.split()[-1] + ', '
@@ -52,8 +66,17 @@ def main():
 
         shortened_author_string = ', '.join(shortened_author_list)
 
-        journal = e['journal'].replace('\\','').replace('}','').replace('{','')
-        doi = e['doi']
+        try:
+            journal = e['journal'].replace('\\','').replace('}','').replace('{','')
+        except KeyError:
+            journal = False
+
+        try:
+            doi = e['doi']
+        except KeyError:
+            logging.info(f'{title} has no doi, skipping (for now?)')
+            continue
+
         title = e['title'].replace('}','').replace('{','').replace('\n','').replace('\r','')
         if journal == 'Zenodo' or 'ZENODO' in doi:
             logging.info(f'Skipping cited dataset {title}, {doi} at Zenodo (for now?)')
@@ -72,20 +95,20 @@ def main():
         except KeyError:
             pages = False
 
+        overall_string = f'{counter}. {shortened_author_string}, {year}. {title}.'
+        if journal:
+            overall_string += f' {journal}, '
+        if volume:
+            overall_string += f' {volume}, '
+        if pages:
+            overall_string += f' {pages}.'
 
-        if not year:
-            overall_string = f'{counter}. {shortened_author_string}, {year}. {title}. {journal}, {volume}, {pages}.'
-        if volume and pages:
-            overall_string = f'{counter}. {shortened_author_string}, {year}. {title}. {journal}, {volume}, {pages}.'
-        if not volume and pages:
-            overall_string = f'{counter}. {shortened_author_string}, {year}. {title}. {journal}, {pages}.'
-        if not volume and not pages:
-            overall_string = f'{counter}. {shortened_author_string}, {year}. {title}. {journal}.'
-        if not year:
-            overall_string = f'{counter}. {shortened_author_string}. {title}. {journal}, {volume}, {pages}.'
+        overall_string = overall_string.strip()
+        overall_string = overall_string.replace('  ',' ')
+        if overall_string[-1] == ',':
+            overall_string = overall_string.rstrip(',') + '.'
 
         # now get the citations
-
         # http://api.crossref.org/works/10.1179/1942787514y.0000000039 for example
         crossref_url = f'http://api.crossref.org/works/{doi}'
 
@@ -98,6 +121,7 @@ def main():
         altmetric_score = r.json()['score']
 
         overall_string += f'\nImpact Factor = FILLME\nCitations = {reference_count}\nAltmetric score = {altmetric_score}\n'
+        overall_string = overall_string.replace('..','')
         print(overall_string)
 
 if __name__ == '__main__':
